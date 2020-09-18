@@ -1,5 +1,6 @@
 package simpledb;
 
+import javax.xml.crypto.Data;
 import java.util.*;
 import java.io.*;
 
@@ -67,8 +68,7 @@ public class HeapPage implements Page {
     */
     private int getNumTuples() {        
         // some code goes here
-        return 0;
-
+        return (BufferPool.getPageSize()*8) / (td.getSize() * 8 + 1);
     }
 
     /**
@@ -76,9 +76,10 @@ public class HeapPage implements Page {
      * @return the number of bytes in the header of a page in a HeapFile with each tuple occupying tupleSize bytes
      */
     private int getHeaderSize() {        
-        
         // some code goes here
-        return 0;
+        double tuplesPerPage = Math.floor((double)(BufferPool.getPageSize() * 8) / (this.td.getSize() * 8 + 1));
+        double headerSize = Math.ceil(tuplesPerPage / 8);
+        return (int)headerSize;
                  
     }
     
@@ -290,7 +291,7 @@ public class HeapPage implements Page {
      */
     public boolean isSlotUsed(int i) {
         // some code goes here
-        return false;
+        return ((this.header[i/8] >> (7-(i%8))) & 1) == 1;
     }
 
     /**
