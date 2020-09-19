@@ -112,8 +112,8 @@ public class HeapPage implements Page {
      * @return the PageId associated with this page.
      */
     public HeapPageId getId() {
-    // some code goes here
-    throw new UnsupportedOperationException("implement this");
+        // some code goes here
+        return this.pid;
     }
 
     /**
@@ -283,7 +283,13 @@ public class HeapPage implements Page {
      */
     public int getNumEmptySlots() {
         // some code goes here
-        return 0;
+        int res = 0;
+        for (int i = 0 ; i < this.numSlots/8; ++i) {
+            for (int j = 0 ; j < 8 ; j ++) {
+                res += (this.header[i] >> j) & 1;
+            }
+        }
+        return this.numSlots - res;
     }
 
     /**
@@ -291,7 +297,7 @@ public class HeapPage implements Page {
      */
     public boolean isSlotUsed(int i) {
         // some code goes here
-        return ((this.header[i/8] >> (7-(i%8))) & 1) == 1;
+        return ((this.header[i/8] >> (i%8)) & 1) == 1;
     }
 
     /**
@@ -308,7 +314,13 @@ public class HeapPage implements Page {
      */
     public Iterator<Tuple> iterator() {
         // some code goes here
-        return null;
+        List<Tuple> list = new ArrayList<>();
+        for (int i = 0; i < this.numSlots; i++) {
+            if (isSlotUsed(i)) {
+                list.add(this.tuples[i]);
+            }
+        }
+        return list.iterator();
     }
 
 }

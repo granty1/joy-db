@@ -27,6 +27,7 @@ public class BufferPool {
     constructor instead. */
     public static final int DEFAULT_PAGES = 50;
 
+    private static int numPages;
     private ConcurrentHashMap<PageId, Page> buffer;
 
     /**
@@ -36,6 +37,7 @@ public class BufferPool {
      */
     public BufferPool(int numPages) {
         // some code goes here
+        this.numPages = numPages;
         this.buffer = new ConcurrentHashMap<>(numPages);
     }
     
@@ -71,9 +73,15 @@ public class BufferPool {
     public  Page getPage(TransactionId tid, PageId pid, Permissions perm)
         throws TransactionAbortedException, DbException {
         // some code goes here
-        Page page = this.buffer.get(pid);
-        if (page == null) {
-            throw new DbException("page id :" + pid + "not found.");
+        if (buffer.contains(pid)) {
+            // cache in buffer
+            return buffer.get(pid);
+        }
+        // not exist
+        DbFile file = Database.getCatalog().getDatabaseFile(pid.getTableId());
+        Page page = file.readPage(pid);
+        if (this.buffer.size() < this.numPages) {
+            this.buffer.put(pid, page);
         }
         return page;
     }

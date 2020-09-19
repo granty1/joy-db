@@ -1,6 +1,7 @@
 package simpledb;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -27,6 +28,10 @@ public class Tuple implements Serializable {
     public Tuple(TupleDesc td) {
         // some code goes here
         this.td = td;
+        this.fields = new ArrayList<>(td.numFields());
+        for (int i = 0; i < td.numFields(); i++) {
+            this.fields.add(null);
+        }
     }
 
     /**
@@ -67,6 +72,9 @@ public class Tuple implements Serializable {
      */
     public void setField(int i, Field f) {
         // some code goes here
+        if (i < 0 || i >= this.fields.size()) {
+            return;
+        }
         this.fields.set(i, f);
     }
 
@@ -78,6 +86,10 @@ public class Tuple implements Serializable {
      */
     public Field getField(int i) {
         // some code goes here
+        if (i < 0 || i >= this.fields.size()) {
+            System.out.println("get field :" + i);
+            return null;
+        }
         return this.fields.get(i);
     }
 
