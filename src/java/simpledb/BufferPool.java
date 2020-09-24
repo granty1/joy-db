@@ -73,14 +73,14 @@ public class BufferPool {
     public  Page getPage(TransactionId tid, PageId pid, Permissions perm)
         throws TransactionAbortedException, DbException {
         // some code goes here
-        if (buffer.contains(pid)) {
+        if (buffer.containsKey(pid)) {
             // cache in buffer
             return buffer.get(pid);
         }
         // not exist
         DbFile file = Database.getCatalog().getDatabaseFile(pid.getTableId());
         Page page = file.readPage(pid);
-        if (this.buffer.size() < this.numPages) {
+        if (this.buffer.size() < BufferPool.numPages) {
             this.buffer.put(pid, page);
         }
         return page;

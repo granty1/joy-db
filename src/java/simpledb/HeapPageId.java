@@ -42,7 +42,7 @@ public class HeapPageId implements PageId {
      */
     public int hashCode() {
         // some code goes here
-        return ( tableId + pgNo + "" ).hashCode();
+        return ( tableId + "" + pgNo + "" ).hashCode();
     }
 
     /**
@@ -59,6 +59,7 @@ public class HeapPageId implements PageId {
         // some code goes
         if (o instanceof HeapPageId) {
             HeapPageId target = (HeapPageId)o;
+
             if (target.pgNo == this.pgNo && target.tableId == this.tableId) {
                 return true;
             }

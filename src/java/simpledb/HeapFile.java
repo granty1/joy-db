@@ -30,7 +30,9 @@ public class HeapFile implements DbFile {
         @Override
         public void open() throws DbException, TransactionAbortedException {
             this.curPageNo = 0;
-            resetPage();
+            HeapPageId heapPageId = new HeapPageId(tableId, curPageNo);
+            this.curPage = (HeapPage) Database.getBufferPool().getPage(transactionId, heapPageId, Permissions.READ_WRITE);
+            this.tupleIterator = this.curPage.iterator();
         }
 
         @Override
@@ -53,7 +55,6 @@ public class HeapFile implements DbFile {
             if (this.tupleIterator == null || !this.tupleIterator.hasNext()) {
                 throw new NoSuchElementException();
             }
-
             return this.tupleIterator.next();
         }
 

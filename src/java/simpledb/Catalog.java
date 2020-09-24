@@ -24,25 +24,17 @@ public class Catalog {
      */
     public Catalog() {
         // some code goes here
-        this.tablePrimaryKey = new HashMap<>();
-        this.tableFiles = new HashMap<>();
-        this.tables = new HashMap<>();
+        tableID2PrimaryKey = new HashMap<>();
+        tableID2DbFile = new HashMap<>();
+        tableName2TableID = new HashMap<>();
+        tableID2TableName = new HashMap<>();
     }
-    /**
-     * key : name
-     * value : primary key
-     */
-    private Map<Integer, String> tablePrimaryKey;
-    /**
-     * key : name
-     * value : DBfile
-     */
-    private Map<Integer, DbFile> tableFiles;
-    /**
-     * key: id
-     * value : table name
-     */
-    private Map<Integer, String> tables;
+    private Map<Integer, String> tableID2PrimaryKey;
+    private Map<Integer, DbFile> tableID2DbFile;
+    private Map<Integer, String> tableID2TableName;
+    private Map<String, Integer> tableName2TableID;
+
+
 
     /**
      * Add a new table to the catalog.
@@ -55,10 +47,10 @@ public class Catalog {
      */
     public void addTable(DbFile file, String name, String pkeyField) {
         // some code goes here
-        Integer id = file.getId();
-        this.tablePrimaryKey.put(id, pkeyField);
-        this.tableFiles.put(id, file);
-        this.tables.put(id, name);
+        tableName2TableID.put(name, file.getId());
+        tableID2DbFile.put(file.getId(), file);
+        tableID2PrimaryKey.put(file.getId(), pkeyField);
+        tableID2TableName.put(file.getId(), name);
     }
 
     public void addTable(DbFile file, String name) {
@@ -82,11 +74,8 @@ public class Catalog {
      */
     public int getTableId(String name) throws NoSuchElementException {
         // some code goes here
-        for (Integer key :
-                this.tables.keySet()) {
-            if (this.tables.get(key).equals(name)) {
-                return key;
-            }
+        if (tableName2TableID.containsKey(name)) {
+            return tableName2TableID.get(name);
         }
         throw new NoSuchElementException();
     }
@@ -99,11 +88,10 @@ public class Catalog {
      */
     public TupleDesc getTupleDesc(int tableid) throws NoSuchElementException {
         // some code goes here
-        DbFile file = this.tableFiles.get(tableid);
-        if (file == null) {
-            throw new NoSuchElementException();
+        if (tableID2DbFile.containsKey(tableid)) {
+            return tableID2DbFile.get(tableid).getTupleDesc();
         }
-        return file.getTupleDesc();
+        throw new NoSuchElementException();
     }
 
     /**
@@ -114,34 +102,40 @@ public class Catalog {
      */
     public DbFile getDatabaseFile(int tableid) throws NoSuchElementException {
         // some code goes here
-        DbFile file = this.tableFiles.get(tableid);
-        if (file == null) {
-            throw new NoSuchElementException();
+        if (tableID2DbFile.containsKey(tableid)) {
+            return tableID2DbFile.get(tableid);
         }
-        return file;
+        throw new NoSuchElementException();
     }
 
     public String getPrimaryKey(int tableid) {
         // some code goes here
-        return this.tablePrimaryKey.get(tableid);
+        if(tableID2PrimaryKey.containsKey(tableid)){
+            return tableID2PrimaryKey.get(tableid);
+        }
+        return null;
     }
 
     public Iterator<Integer> tableIdIterator() {
         // some code goes here
-        return this.tables.keySet().iterator();
+        return this.tableID2DbFile.keySet().iterator();
     }
 
     public String getTableName(int id) {
         // some code goes here
-        return this.tables.get(id);
+        if(tableID2TableName.containsKey(id)){
+            return tableID2TableName.get(id);
+        }
+        return null;
     }
     
     /** Delete all tables from the catalog */
     public void clear() {
         // some code goes here
-        this.tables = new HashMap<>();
-        this.tablePrimaryKey = new HashMap<>();
-        this.tableFiles = new HashMap<>();
+        tableID2TableName.clear();
+        tableID2DbFile.clear();
+        tableID2PrimaryKey.clear();
+        tableName2TableID.clear();
     }
     
     /**
